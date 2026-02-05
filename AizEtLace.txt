@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aiz&Lace - Aesthetic, Coquete, Vintage Gifts</title>
+    <style>
+        /* Tema warna: Aesthetic (pastel pink, lavender), Coquete (blush, rose gold), Vintage (cream, gold, brown) */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f4f0; /* Cream untuk vintage */
+            color: #5d4e37; /* Brown untuk vintage */
+        }
+        header {
+            background-color: #e6b8c7; /* Pastel pink untuk aesthetic */
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d4af37; /* Gold untuk vintage */
+        }
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+        nav a {
+            text-decoration: none;
+            color: #5d4e37;
+            font-weight: bold;
+        }
+        nav a:hover {
+            color: #e6b8c7;
+        }
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            background-color: #f4c2c2; /* Blush untuk coquete */
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            color: #5d4e37;
+        }
+        button:hover {
+            background-color: #d4af37;
+        }
+        .hero {
+            text-align: center;
+            padding: 50px 20px;
+            background-color: #f0e6d2; /* Light cream */
+        }
+        .hero h1 {
+            color: #e6b8c7;
+        }
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+        .category {
+            background-color: #f4c2c2;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 200px;
+            cursor: pointer;
+        }
+        .category:hover {
+            background-color: #d4af37;
+        }
+        .whatsapp {
+            text-align: center;
+            padding: 20px;
+            background-color: #e6b8c7;
+            color: white;
+        }
+        .whatsapp a {
+            color: #d4af37;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .catalog {
+            padding: 20px;
+            display: none;
+        }
+        .catalog.active {
+            display: block;
+        }
+        .product {
+            background-color: white;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: inline-block;
+            width: calc(33% - 20px);
+            vertical-align: top;
+        }
+        .product img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .cart {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #f4c2c2;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .cart-count {
+            background-color: #d4af37;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        @media (max-width: 768px) {
+            .categories {
+                flex-direction: column;
+                align-items: center;
+            }
+            .product {
+                width: calc(50% - 20px);
+            }
+        }
+        @media (max-width: 480px) {
+            .product {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Aiz&Lace</div>
+        <nav>
+            <a href="#" onclick="showCatalog('aesthetic')">Aesthetic</a>
+            <a href="#" onclick="showCatalog('coquete')">Coquete</a>
+            <a href="#" onclick="showCatalog('vintage')">Vintage</a>
+        </nav>
+        <div class="auth-buttons">
+            <button onclick="openModal('login')">Login</button>
+            <button onclick="openModal('signup')">Sign Up</button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h1>Selamat Datang di Aiz&Lace</h1>
+        <p>Temukan hadiah, hampers, buket, jewelry cantik, dan pakaian dengan tema aesthetic, coquete, dan vintage.</p>
+    </div>
+
+    <div class="categories">
+        <div class="category" onclick="showCatalog('aesthetic')">
+            <h3>Aesthetic</h3>
+            <p>Gaya minimalis dan indah.</p>
+        </div>
+        <div class="category" onclick="showCatalog('coquete')">
+            <h3>Coquete</h3>
+            <p>Gaya feminin dan menggoda.</p>
+        </div>
+        <div class="category" onclick="showCatalog('vintage')">
+            <h3>Vintage</h3>
+            <p>Gaya klasik dan timeless.</p>
+        </div>
+    </div>
+
+    <div class="whatsapp">
+        <p>Pertanyaan lebih lanjut? Hubungi kami di WhatsApp: <a href="https://wa.me/6287862438374">087862438374</a></p>
+    </div>
+
+    <!-- Katalog Aesthetic -->
+    <div id="aesthetic-catalog" class="catalog">
+        <h2>Katalog Aesthetic</h2>
+        <div id="aesthetic-products" class="products"></div>
+    </div>
+
+    <!-- Katalog Coquete -->
+    <div id="coquete-catalog" class="catalog">
+        <h2>Katalog Coquete</h2>
+        <div id="coquete-products" class="products"></div>
+    </div>
+
+    <!-- Katalog Vintage -->
+    <div id="vintage-catalog" class="catalog">
+        <h2>Katalog Vintage</h2>
+        <div id="vintage-products" class="products"></div>
+    </div>
+
+    <!-- Keranjang -->
+    <div class="cart" onclick="openCart()">
+        <span>🛒</span>
+        <span class="cart-count" id="cart-count">0</span>
+    </div>
+
+    <!-- Modal Login/Signup -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal()" style="float:right; cursor:pointer;">&times;</span>
+            <div id="login-form">
+                <h2>Login</h2>
+                <form onsubmit="login(event)">
+                    <div class="form-group">
+                        <input type="email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+            <div id="signup-form" style="display:none;">
+                <h2>Sign Up</h2>
+                <form onsubmit="signup(event)">
+                    <div class="form-group">
+                        <input type="text" placeholder="Nama Toko" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit">Sign Up</button>
+                </form>
+            </div>
+            <p onclick="toggleForm()">Belum punya akun? <a href="#" onclick="toggleForm()">Daftar</a></p>
+        </div>
+    </div>
+
+    <!-- Modal Keranjang -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal()" style="float:right; cursor:pointer;">&times;</span>
+            <h2>Keranjang Belanja</h2>
+            <div id="cart-items"></div>
+            <button onclick="checkout()">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Modal Upload Produk (untuk user yang login) -->
+    <div id="upload-modal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal()" style="float:right; cursor:pointer;">&times;</span>
+            <h2>Upload Produk</h2>
+            <form onsubmit="uploadProduct(event)">
+                <div class="form-group">
+                    <select id="category-select" required>
+                        <option value="aesthetic">Aesthetic</option>
+                        <option value="coquete">Coquete</option>
+                        <option value="vintage">Vintage</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" placeholder="Nama Barang" required>
+                </div>
+                <div class="form-group">
+                    <input type="number" placeholder="Harga" required>
+                </div>
+                <div class="form-group">
+                    <textarea placeholder="Deskripsi Barang" required></textarea>
+                </div>
+                <div class="form-group">
+                    <input type="file" accept="image/*" required>
+                </div>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let cart = [];
+        let products = {
+            aesthetic: [],
+            coquete: [],
+            vintage: []
+        };
+
+        function showCatalog(category) {
+            document.querySelectorAll('.catalog').forEach(cat => cat.classList.remove('active'));
+            document.getElementById(category + '-catalog').classList.add('active');
+            renderProducts(category);
+        }
+
+        function renderProducts(category) {
+            const container = document.getElementById(category + '-products');
+            container.innerHTML = '';
+            products[category].forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+                productDiv.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}">
+                    <h4>${product.name}</h4>
+                    <p>Rp ${product.price}</p>
+                    <p>${product.description}</p>
+                    <p>Toko: ${product.store}</p>
+                    <button onclick="addToCart('${product.name}', ${product.price})">Tambah ke Keranjang</button>
+                `;
+                container.appendChild(productDiv);
+            });
+        }
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            document.getElementById('cart-count').textContent = cart.length;
+        }
+
+        function openCart() {
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = '';
+            cart.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.textContent = `${item.name} - Rp ${item.price}`;
+                cartItems.appendChild(itemDiv);
+            });
+            document.getElementById('cart-modal').style.display = 'flex';
+        }
+
+        function checkout() {
+            const message = cart.map(item => `${item.name} - Rp ${item.price}`).join('\n');
+            const whatsappUrl = `https://wa.me/6287862438374?text=${encodeURIComponent('Checkout:\n' + message)}`;
+            window.location.href = whatsappUrl;
+        }
+
+        function openModal(type) {
+            document.getElementById('auth-modal').style.display = 'flex';
+            if (type === 'login') {
+                document.getElementById('login-form').style.display = 'block';
+                document.getElementById('signup-form').style.display = 'none';
+            } else {
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('signup-form').style.display = 'block';
+            }
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
+        }
+
+        function toggleForm() {
+            const login = document.getElementById('login-form');
+            const signup = document.getElementById('signup-form');
+            if (login.style.display === 'none') {
+                login.style.display = 'block';
+                signup.style.display = 'none';
+            } else {
+                login.style.display = 'none';
+                signup.style.display = 'block';
+            }
+        }
+
+        function login(event) {
+            event.preventDefault();
+            // Simulasi login
+            currentUser = { email: event.target[0].value };
+            alert('Login berhasil!');
+            closeModal();
+            // Tambahkan tombol upload produk di header atau navigasi
+            const nav = document.querySelector('nav');
+            const uploadBtn = document.createElement('a');
+            uploadBtn.href = '#';
+            uploadBtn.textContent = 'Upload Produk';
+            uploadBtn.onclick = () => document.getElementById('upload-modal').style.display = 'flex';
+            nav.appendChild(uploadBtn);
+        }
+
+        function signup(event) {
+            event.preventDefault();
+            // Simulasi signup
+            currentUser = { store: event.target[0].value, email: event.target[1].value };
+            alert('Sign up berhasil! Sekarang Anda bisa membuat toko.');
+            closeModal();
+            // Tambahkan tombol upload
+            const nav = document.querySelector('nav');
+            const uploadBtn = document.createElement('a');
+            uploadBtn.href = '#';
+            uploadBtn.textContent = 'Upload Produk';
+            uploadBtn.onclick = () => document.getElementById('upload-modal').style.display = 'flex';
+            nav.appendChild(uploadBtn);
+        }
+
+        function uploadProduct(event) {
+            event.preventDefault();
+            const category = event.target[0].value;
+            const name = event.target[1].value;
+            const price = event.target[2].value;
+            const description = event.target[3].value;
+            const file = event.target[4].files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const product = {
+                    name,
+                    price,
+                    description,
+                    image: e.target.result,
+                    store: currentUser.store || 'Toko Anda'
+                };
+                products[category].push(product);
+                renderProducts(category);
+                closeModal();
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>

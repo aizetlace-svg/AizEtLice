@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aiz&Lace - Katalog Hadiah dan Buket</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFF5EE;
+            color: #8B4513;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #FFB6C1;
+            color: #8B4513;
+            padding: 20px;
+            text-align: center;
+        }
+        .app-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #FFB6C1, #D2691E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+            to { text-shadow: 2px 2px 8px rgba(255,182,193,0.8), 0 0 10px rgba(255,182,193,0.5); }
+        }
+        header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+        .description {
+            padding: 20px;
+            text-align: center;
+            background-color: #F5DEB3;
+        }
+        .categories {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .category-btn {
+            background-color: #D2691E;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .category-btn:hover {
+            background-color: #A0522D;
+        }
+        .catalog {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .product {
+            background-color: #FFF;
+            border: 1px solid #D2691E;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .product img {
+            max-width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .product h3 {
+            color: #8B4513;
+        }
+        .product p {
+            color: #A0522D;
+        }
+        .add-to-cart {
+            background-color: #FFB6C1;
+            color: #8B4513;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .cart {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #D2691E;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .cart:hover {
+            background-color: #A0522D;
+        }
+        .checkout {
+            background-color: #FFB6C1;
+            color: #8B4513;
+            border: none;
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .auth {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #D2691E;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .auth:hover {
+            background-color: #A0522D;
+        }
+        .add-product {
+            position: fixed;
+            top: 60px;
+            left: 20px;
+            background-color: #D2691E;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none; /* Hidden unless logged in */
+        }
+        .add-product:hover {
+            background-color: #A0522D;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #FFF;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: black;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #D2691E;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #FFB6C1;
+            color: #8B4513;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #FF69B4;
+        }
+        @media (max-width: 768px) {
+            .catalog {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            .categories {
+                flex-direction: column;
+            }
+            .app-name {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="app-name">Aiz&Lace</h1>
+        <p>Katalog Hadiah, Buket, dan Barang Aesthetic</p>
+    </header>
+
+    <div class="description">
+        <p>Selamat datang di Aiz&Lace! Temukan koleksi hadiah, buket, dan barang aesthetic, coquete, serta vintage yang cantik dan unik. Log in untuk menambah produk ke katalog.</p>
+    </div>
+
+    <div class="categories">
+        <button class="category-btn" onclick="filterCategory('aesthetic')">Aesthetic</button>
+        <button class="category-btn" onclick="filterCategory('vintage')">Vintage</button>
+        <button class="category-btn" onclick="filterCategory('coquete')">Coquete</button>
+    </div>
+
+    <div class="catalog" id="catalog"></div>
+
+    <div class="cart" onclick="showCart()">Keranjang (0)</div>
+
+    <div class="auth" onclick="showAuthModal()">Log In / Sign Up</div>
+
+    <div class="add-product" id="addProductBtn" onclick="showAddProductModal()">Tambah Produk</div>
+
+    <!-- Modal for Auth -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Log In</h2>
+            <form id="loginForm">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit">Log In</button>
+            </form>
+            <p>Belum punya akun? <button onclick="showSignUp()">Sign Up</button></p>
+            <div id="signUpForm" style="display: none;">
+                <h3>Sign Up</h3>
+                <input type="email" id="signUpEmail" placeholder="Email" required>
+                <input type="password" id="signUpPassword" placeholder="Password" required>
+                <button onclick="signUp()">Sign Up</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Add Product -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Tambah Produk</h2>
+            <form id="addProductForm">
+                <input type="text" id="productName" placeholder="Nama Barang" required>
+                <input type="number" id="productPrice" placeholder="Harga" required>
+                <textarea id="productDesc" placeholder="Deskripsi" required></textarea>
+                <select id="productCategory" required>
+                    <option value="aesthetic">Aesthetic</option>
+                    <option value="vintage">Vintage</option>
+                    <option value="coquete">Coquete</option>
+                </select>
+                <input type="file" id="productImage" accept="image/*" required>
+                <button type="submit">Tambah Produk</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Cart -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Keranjang</h2>
+            <div id="cartItems"></div>
+            <button class="checkout" onclick="checkout()">Check Out via WA</button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Config - GANTI DENGAN YANG DARI PROYEK KAMU
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        let products = [];
+        let cart = [];
+        let user = null;
+
+        // Auth State Listener
+        auth.onAuthStateChanged((currentUser) => {
+            user = currentUser;
+            if (user) {
+                document.querySelector('.auth').textContent = 'Log Out';
+                document.querySelector('.auth').onclick = logOut;
+                document.getElementById('addProductBtn').style.display = 'block';
+            } else {
+                document.querySelector('.auth').textContent = 'Log In / Sign Up';
+                document.querySelector('.auth').onclick = showAuthModal;
+                document.getElementById('addProductBtn').style.display = 'none';
+            }
+            loadProducts();
+        });
+
+        // Load products from Firestore
+        async function loadProducts() {
+            const snapshot = await db.collection('products').get();
+            products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderCatalog();
+        }
+
+        function renderCatalog(category = 'all') {
+            const catalog = document.getElementById('catalog');
+            catalog.innerHTML = '';
+            products.forEach(product => {
+                if (category === 'all' || product.category === category) {
+                    const productDiv = document.createElement('div');
+                    productDiv.className = 'product';
+                    productDiv.innerHTML = `
+                        <img src="${product.imageUrl}" alt="${product.name}">
+                        <h3>${product.name}</h3>
+                        <p>Rp ${product.price}</p>
+                        <p>${product.desc}</p>
+                        <button class="add-to-cart" onclick="addToCart('${product.name}', ${product.price})">Tambah ke Keranjang</button>
+                    `;
+                    catalog.appendChild(productDiv);
+                }
+            });
+        }
+
+        function filterCategory(category) {
+            renderCatalog(category);
+        }
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            document.querySelector('.cart').textContent = `Keranjang (${cart.length})`;
+        }
+
+        function showCart() {
+            const cartItems = document.getElementById('cartItems');
+            cartItems.innerHTML = '';
+            cart.forEach(item => {
+                cartItems.innerHTML += `<p>${item.name} - Rp ${item.price}</p>`;
+            });
+            document.getElementById('cartModal').style.display = 'block';
+        }
+
+        function checkout() {
+            const message = cart.map(item => `${item.name} - Rp ${item.price}`).join('\n');
+            const waUrl = `https://wa.me/6287862438374?text=Pesanan:%0A${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank');
+        }
+
+        function showAuthModal() {
+            document.getElementById('authModal').style.display = 'block';
+        }
+
+        function showSignUp() {
+            document.getElementById('signUpForm').style.display = 'block';
+        }
+
+        function signUp() {
+            const email = document.getElementById('signUpEmail').value;
+            const password = document.getElementById('signUpPassword').value;
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(() => {
+                    alert('Sign up berhasil! Silakan log in.');
+                    document.getElementById('signUpForm').style.display = 'none';
+                })
+                .catch(error => alert(error.message));
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            auth.signInWithEmailAndPassword(email, password)
+                .catch(error => alert(error.message));
+        });
+
+        function logOut() {
+            auth.signOut();
+        }
+
+        function showAddProductModal() {
+            if (user) {
+                document.getElementById('addProductModal').style.display = 'block';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('authModal').style.display = 'none';
+            document.getElementById('addProductModal').style.display = 'none';
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!user) return;
+            const name = document.getElementById('productName').value;
+            const price = document.getElementById('productPrice').value;
+            const desc = document.getElementById('productDesc').value;
+            const category = document.getElementById('productCategory').value;
+            const imageFile = document.getElementById('productImage').files[0];
+
+            if (imageFile) {
+                const storageRef = storage.ref(`products/${Date.now()}_${imageFile.name}`);
+                const uploadTask = await storageRef.put(imageFile);
+                const imageUrl = await uploadTask.ref.getDownloadURL();
+
+                await db.collection('products').add({
+                    name,
+                    price: parseInt(price),
+                    desc,
+                    category,
+                    imageUrl
+                });
+
+                await loadProducts();
+                document.getElementById('addProductModal').style.display = 'none';
+                alert("Produk berhasil ditambahkan!");
+            }
+        });
+
+        loadProducts();
+    </script>
+</body>
+</html>
